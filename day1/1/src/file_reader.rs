@@ -10,12 +10,12 @@ impl FileReader {
 		let content = fs::read_to_string(&self.file)
 			.unwrap();
 			
-		let calories = FileReader::parse_and_calculate(content);
+		let calories: i32 = FileReader::parse_and_calculate(content);
 		calories
 	}
 	
 	fn parse_and_calculate(content: String) -> i32 {
-		let mut max_calories = 0;
+		let mut max_calories: i32 = 0;
 
 		let mut current_calories: i32 = 0;
 		for l in content.lines() {
