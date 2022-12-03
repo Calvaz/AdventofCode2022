@@ -1,4 +1,5 @@
 use crate::rps_rules::Rps;
+use crate::rps_rules::Points;
 use std::fs;
 use std::str::FromStr;
 
@@ -8,7 +9,7 @@ impl ProblemSolver {
 
     pub fn solve() {
         let content = fs::read_to_string("./input").unwrap_or_default();
-        Self::solve_with_content(&content);
+        Self::solve_second_part(&content);
     }
 
     fn solve_with_content(content: &str) -> i32 {
@@ -20,7 +21,23 @@ impl ProblemSolver {
             let player = Rps::from_str(&players[1]).unwrap();
             let opponent = Rps::from_str(&players[0]).unwrap();
 
-            score += Rps::challenge((player, opponent));
+            score += Rps::challenge_part_one((player, opponent));
+        }
+
+        println!("{}", score);
+        score
+    }
+
+    fn solve_second_part(content: &str) -> i32{
+        let games = content.lines();
+        let mut score: i32 = 0;
+        
+        for g in games {
+            let players: Vec<&str> = g.split(' ').collect();
+            let tactic = Points::from_str(&players[1]).unwrap();
+            let opponent = Rps::from_str(&players[0]).unwrap();
+
+            score += Rps::challenge_part_two((tactic, opponent));
         }
 
         println!("{}", score);
