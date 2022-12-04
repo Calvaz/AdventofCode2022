@@ -4,7 +4,7 @@ pub struct PuzzleSolver {}
 
 impl PuzzleSolver { 
 
-    pub fn solve(&self) -> i32 {
+    pub fn solve() -> i32 {
         let content = fs::read_to_string("./input").unwrap_or_default();
         Self::solve_puzzle(&content)
     }
@@ -15,10 +15,9 @@ impl PuzzleSolver {
         let mut priority_sum: i32 = 0;
         for r in puzzle {
             let (first_half, second_half) = Self::split_half(r);
-            
+            priority_sum += Self::calculate_char_priority(first_half, second_half);
         }
-
-        1
+        priority_sum
     }
 
     fn split_half(row: &str) -> (Vec<char>, Vec<char>) {
@@ -28,14 +27,22 @@ impl PuzzleSolver {
         (first_half, second_half)
     }
 
-    fn is_char_present(first_half: Vec<char>, second_half: Vec<char>) {
+    fn calculate_char_priority(first_half: Vec<char>, second_half: Vec<char>) -> i32 {
+        let mut ret: i32 = 0;
         for c in first_half {
             if second_half.contains(&c) {
-
+                if c.is_ascii_uppercase() {
+                    ret = ((c as i32 + 13) % 52) + 1;
+                    break;
+                }
+                ret = ((c as i32 + 7) % 26) + 1;
+                break;
             }
         }
-    }
 
+        println!("{}", ret);
+        ret
+    }
 }
 
 #[cfg(test)]
@@ -54,8 +61,25 @@ mod tests {
     }
 
     #[test]
-    fn test_char_value() {
-        assert_eq!('A' as u8, 1);
+    fn calculate_priority_test() {
+        let mut first_half: Vec<char> = vec!['v','J','r','w','p','W','t','w','J','g','W','r'];
+        let mut second_half: Vec<char> = vec!['h','c','s','F','M','M','f','F','F','h','F','p'];
+
+        let mut result: i32 = PuzzleSolver::calculate_char_priority(first_half, second_half);
+        assert_eq!(result, 16);
+
+        first_half = vec!['j','q','H','R','N','q','R','j','q','z','j','G','D','L','G','L'];
+        second_half = vec!['r','s','F','M','f','F','Z','S','r','L','r','F','Z','s','S','L'];
+        
+        result = PuzzleSolver::calculate_char_priority(first_half, second_half);
+        assert_eq!(result, 38);
+
+        first_half = vec!['a','b','c','D'];
+        second_half = vec!['f','g','h', 'a'];
+        
+        result = PuzzleSolver::calculate_char_priority(first_half, second_half);
+        assert_eq!(result, 1);
+
     }
 }
 
