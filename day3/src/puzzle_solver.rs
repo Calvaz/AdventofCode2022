@@ -27,12 +27,13 @@ impl PuzzleSolver {
         (first_half, second_half)
     }
 
+    // could use a hashmap but I didn't want to
     fn calculate_char_priority(first_half: Vec<char>, second_half: Vec<char>) -> i32 {
         let mut ret: i32 = 0;
         for c in first_half {
             if second_half.contains(&c) {
                 if c.is_ascii_uppercase() {
-                    ret = ((c as i32 + 13) % 52) + 1;
+                    ret = ((c as i32 + 13) % 52) + 1;  // + 1 because modulus gives 0 rest if correct division
                     break;
                 }
                 ret = ((c as i32 + 7) % 26) + 1;
