@@ -16,10 +16,14 @@ fn main() {
             }
             char_sets.insert(c);
 
-            if char_sets.len() == 4 {
+            // if char_sets.len() == 4 {
+            //     break;
+            // }
+
+            if char_sets.len() == 14 {
                 break;
             }
         }
-        println!("{}", index);
+        println!("Solution is: {:?}", index);
     }
 }
