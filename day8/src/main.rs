@@ -2,7 +2,7 @@ use std::fs;
 
 fn main() {
     let file = fs::read_to_string("./input").expect("there is a file");
-    solution::solve(file);
+    println!("{:?}", solution::solve(file));
 }
 
 mod solution {
@@ -16,28 +16,56 @@ mod solution {
         let columns: Vec<char> = rows[0].chars().collect();
         let column_len: usize = columns.len(); 
         let mut trees: usize = (rows_len - 1) * 2 + (column_len - 1) * 2;
+
+        // part two
+        let mut viewable_distance: usize = 0;
+
         for r in 1..rows_len - 1 {
             let column: Vec<char> = rows[r].chars().collect();
             
             let column_len = rows.len();
             for c in 1..column_len - 1 {
                 let tree: usize = column[c].to_digit(10).unwrap() as usize;
+                let mut curr_viewable_distance: Vec<usize> = vec![0, 0, 0, 0];
                 
                 'dir: for d in &directions {
-                    let current_trees = trees;
-                    traverse(&rows, c, r, tree, (c, r), &mut trees, &d);
-                    if trees > current_trees {
-                        break 'dir;
-                    }
+                    
+                    // part two
+                    traverse(&rows, c, r, tree, (c, r), &mut trees, &d, &mut curr_viewable_distance);
+
+
+                    // part one
+                    // let current_trees = trees;
+                    // traverse(&rows, c, r, tree, (c, r), &mut trees, &d, );
+                    // if trees > current_trees {
+                    //     break 'dir;
+                    // }
+                }
+                let curr_vd = curr_viewable_distance[0] * curr_viewable_distance[1] * curr_viewable_distance[2] * curr_viewable_distance[3];
+                if curr_vd > viewable_distance {
+                    viewable_distance = curr_vd;
                 }
             }
         }
         
-        println!("{:?}", trees);
-        trees
+        // part one
+        // println!("{:?}", trees);
+        // trees
+
+        // part two
+        viewable_distance
     }
     
-    fn traverse(height: &Vec<&str>, x: usize, y: usize, tree: usize, (tree_pos_x, tree_pos_y): (usize, usize), trees: &mut usize, direction: &Direction) {
+    fn traverse(
+        height: &Vec<&str>, 
+        x: usize, 
+        y: usize, 
+        tree: usize, 
+        (tree_pos_x, tree_pos_y): (usize, usize), 
+        trees: &mut usize, 
+        direction: &Direction,
+        viewable_distance: &mut Vec<usize>
+    ) {
         let length: Vec<char> = height[y].chars().collect();
     
         let pos_value: usize = length[x].to_digit(10).unwrap() as usize;
@@ -57,7 +85,8 @@ mod solution {
                     return;
                 }
     
-                traverse(height, x, y - 1, tree, (tree_pos_x, tree_pos_y), trees, &Direction::Top);
+                viewable_distance[0] += 1;
+                traverse(height, x, y - 1, tree, (tree_pos_x, tree_pos_y), trees, &Direction::Top, viewable_distance);
             }
     
             Direction::Right => {
@@ -68,7 +97,8 @@ mod solution {
                     return;
                 }
     
-                traverse(height, x + 1, y, tree, (tree_pos_x, tree_pos_y), trees, &Direction::Right);
+                viewable_distance[1] += 1;
+                traverse(height, x + 1, y, tree, (tree_pos_x, tree_pos_y), trees, &Direction::Right, viewable_distance);
             }
             
             Direction::Bottom => {
@@ -79,7 +109,8 @@ mod solution {
                     return;
                 }
     
-                traverse(height, x, y + 1, tree, (tree_pos_x, tree_pos_y), trees, &Direction::Bottom);
+                viewable_distance[2] += 1;
+                traverse(height, x, y + 1, tree, (tree_pos_x, tree_pos_y), trees, &Direction::Bottom, viewable_distance);
             }
             
             Direction::Left => {
@@ -90,7 +121,8 @@ mod solution {
                     return;
                 }
     
-                traverse(height, x - 1, y, tree, (tree_pos_x, tree_pos_y), trees, &Direction::Left);
+                viewable_distance[3] += 1;
+                traverse(height, x - 1, y, tree, (tree_pos_x, tree_pos_y), trees, &Direction::Left, viewable_distance);
             }
         }    
     }
@@ -104,6 +136,7 @@ mod tests {
     
     use crate::solution; 
     
+    // part one test
     #[test]
     fn test_solve() {
         let mut file: String = String::new();
